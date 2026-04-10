@@ -1,3 +1,8 @@
+"""
+Модуль для маскировки банковских карт и счетов,
+а так же для форматирования дат из ISO-формата
+"""
+
 from src.masks import get_mask_card_number, get_mask_account
 
 
