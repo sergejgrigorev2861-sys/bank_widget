@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "bank-widget"
+version = "0.1.0"
+description = ""
+authors = ["Sergei Grigorev"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.14"
+
+[tool.poetry.group.lint.dependencies]
+flake8 = ">=7.3.0,<8.0.0"
+black = ">=26.3.1,<27.0.0"
+isort = ">=8.0.1,<9.0.0"
+mypy = ">=1.20.0,<2.0.0"
+pytest = "^9.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
+target-version = ['py314']
+exclude = '''
+\.git/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[tool.mypy]
+python_version = "3.14"
+disallow_untyped_defs = true
+warn_return_any = true
+exclude = '''
+venv/
+'''
