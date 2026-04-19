@@ -2,6 +2,9 @@
 Модуль для обработки данных банковских операций.
 """
 
+# Version: 1.0.0
+
+
 from typing import List, Dict, Any
 
 
