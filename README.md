@@ -31,3 +31,7 @@ canceled = filter_by_state(transactions, 'CANCELED')
 # Сортировка
 sorted_by_date = sort_by_date(transactions)
 ```
+
+## Лицензия
+
+MIT
