@@ -32,6 +32,23 @@ canceled = filter_by_state(transactions, 'CANCELED')
 sorted_by_date = sort_by_date(transactions)
 ```
 
+## Тестирование
+
+```bash
+pytest tests/
+```
+
+## Для проверки покрытия
+
+```bash
+pytest --cov=src --cov-report=html tests/
+```
+
+### Результаты тестирования
+
+- Всего тестов: 19
+- Покрытие кода: 100%
+
 ## Лицензия
 
 MIT
