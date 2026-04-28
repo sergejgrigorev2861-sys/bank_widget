@@ -34,21 +34,3 @@ def get_date(date_string: str) -> str:
     date_part = date_string.split('T')[0]
     year, month, day = date_part.split('-')
     return f"{day}.{month}.{year}"
-
-
-# Тесты для проверки (можно запустить файл, чтобы убедиться, что всё работает)
-if __name__ == "__main__":
-    test_cases = [
-        "Maestro 1596837868705199",
-        "Счет 64686473678894779589",
-        "MasterCard 7158300734726758",
-        "Visa Platinum 8990922113665229",
-        "Счет 73654108430135874305",
-    ]
-    print("=== Тестирование mask_account_card ===")
-    for case in test_cases:
-        print(f"{case} -> {mask_account_card(case)}")
-
-    print("\n=== Тестирование get_date ===")
-    test_date = "2024-03-11T02:26:18.671407"
-    print(f"{test_date} -> {get_date(test_date)}")
