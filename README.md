@@ -31,6 +31,48 @@ canceled = filter_by_state(transactions, 'CANCELED')
 # Сортировка
 sorted_by_date = sort_by_date(transactions)
 ```
+## Модуль generators
+
+Модуль содержит функции-генераторы для эффективной обработки больших объемов данных транзакций.
+
+### Функции
+
+#### `filter_by_currency(transactions, currency)`
+
+Генератор, фильтрующий транзакции по заданной валюте.
+
+```python
+from src.generators import filter_by_currency
+
+usd_transactions = filter_by_currency(transactions, "USD")
+first_usd = next(usd_transactions)
+```
+
+#### `transaction_descriptions(transactions)`
+Генератор, возвращающий описания транзакций по очереди.
+
+```python
+from src.generators import transaction_descriptions
+
+descriptions = transaction_descriptions(transactions)
+for desc in descriptions:
+    print(desc)
+```
+
+#### `card_number_generator(start, stop)`
+Генератор номеров банковских карт в заданном диапазоне.
+
+```python
+from src.generators import card_number_generator
+
+for card in card_number_generator(1, 5):
+    print(card)
+# 0000 0000 0000 0001
+# 0000 0000 0000 0002
+# 0000 0000 0000 0003
+# 0000 0000 0000 0004
+# 0000 0000 0000 0005
+```
 
 ## Лицензия
 
