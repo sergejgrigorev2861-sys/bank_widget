@@ -74,6 +74,23 @@ for card in card_number_generator(1, 5):
 # 0000 0000 0000 0005
 ```
 
+## Тестирование
+
+```bash
+pytest tests/
+```
+
+## Для проверки покрытия
+
+```bash
+pytest --cov=src --cov-report=html tests/
+```
+
+### Результаты тестирования
+
+- Всего тестов: 19
+- Покрытие кода: 100%
+
 ## Лицензия
 
 MIT
