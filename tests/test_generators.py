@@ -3,8 +3,7 @@
 """
 
 import pytest
-
-from src.generators import card_number_generator, filter_by_currency, transaction_descriptions
+from src.generators import filter_by_currency, transaction_descriptions, card_number_generator
 
 
 @pytest.fixture
@@ -83,6 +82,29 @@ class TestFilterByCurrency:
         assert result == []
 
 
+class TestFilterByCurrencyErrors:
+    def test_filter_by_currency_handles_attribute_error(self):
+        """Проверяет, что генератор обрабатывает AttributeError."""
+        transactions = [None]
+        gen = filter_by_currency(transactions, "USD")
+        result = list(gen)
+        assert result == []
+
+    def test_filter_by_currency_handles_type_error(self):
+        """Проверяет, что генератор обрабатывает TypeError."""
+        transactions = [123]
+        gen = filter_by_currency(transactions, "USD")
+        result = list(gen)
+        assert result == []
+
+    def test_filter_by_currency_handles_key_error(self):
+        """Проверяет, что генератор обрабатывает KeyError."""
+        transactions = [{"id": 1}]
+        gen = filter_by_currency(transactions, "USD")
+        result = list(gen)
+        assert result == []
+
+
 class TestTransactionDescriptions:
     def test_returns_correct_descriptions(self, sample_transactions):
         """Проверяет, что функция возвращает корректные описания."""
@@ -98,6 +120,29 @@ class TestTransactionDescriptions:
     def test_empty_list_returns_empty(self):
         """Проверяет, что для пустого списка возвращается пустой результат."""
         result = list(transaction_descriptions([]))
+        assert result == []
+
+
+class TestTransactionDescriptionsErrors:
+    def test_transaction_descriptions_handles_attribute_error(self):
+        """Проверяет, что генератор обрабатывает AttributeError."""
+        transactions = [None]
+        gen = transaction_descriptions(transactions)
+        result = list(gen)
+        assert result == []
+
+    def test_transaction_descriptions_handles_type_error(self):
+        """Проверяет, что генератор обрабатывает TypeError."""
+        transactions = [123]
+        gen = transaction_descriptions(transactions)
+        result = list(gen)
+        assert result == []
+
+    def test_transaction_descriptions_skips_empty_description(self):
+        """Проверяет, что генератор пропускает пустые описания."""
+        transactions = [{"description": ""}]
+        gen = transaction_descriptions(transactions)
+        result = list(gen)
         assert result == []
 
 
@@ -127,3 +172,8 @@ class TestCardNumberGenerator:
         """Проверяет, что при start < 1 выбрасывается исключение."""
         with pytest.raises(ValueError, match="Номер карты должен быть в диапазоне от 1 до 9999999999999999"):
             list(card_number_generator(0, 10))
+
+    def test_stop_greater_than_max_raises_error(self):
+        """Проверяет, что при stop > 9999999999999999 выбрасывается исключение."""
+        with pytest.raises(ValueError, match="Номер карты должен быть в диапазоне от 1 до 9999999999999999"):
+            list(card_number_generator(1, 10000000000000000))
