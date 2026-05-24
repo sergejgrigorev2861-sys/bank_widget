@@ -1,8 +1,10 @@
 """Тесты для модуля utils."""
 
 import json
+from unittest.mock import mock_open, patch
+
 import pytest
-from unittest.mock import patch
+
 from src.utils import load_transactions
 
 
@@ -49,6 +51,14 @@ def test_load_transactions_file_not_found():
         assert result == []
 
 
+def test_load_transactions_not_a_file():
+    """Тест: путь указывает на директорию, а не на файл."""
+    with patch('pathlib.Path.exists', return_value=True):
+        with patch('pathlib.Path.is_file', return_value=False):
+            result = load_transactions("/some/directory")
+            assert result == []
+
+
 def test_load_transactions_invalid_json(tmp_path):
     """Тест: повреждённый JSON."""
     file_path = tmp_path / "bad.json"
@@ -56,3 +66,31 @@ def test_load_transactions_invalid_json(tmp_path):
         f.write("{invalid json}")
     result = load_transactions(str(file_path))
     assert result == []
+
+
+def test_load_transactions_json_decode_error():
+    """Тест: ошибка JSONDecodeError."""
+    with patch('pathlib.Path.exists', return_value=True):
+        with patch('pathlib.Path.is_file', return_value=True):
+            with patch('builtins.open', mock_open(read_data="invalid json")):
+                with patch('json.load', side_effect=json.JSONDecodeError("Expecting value", "doc", 0)):
+                    result = load_transactions("/any/path.json")
+                    assert result == []
+
+
+def test_load_transactions_os_error():
+    """Тест: ошибка OSError (покрывает except)."""
+    with patch('pathlib.Path.exists', return_value=True):
+        with patch('pathlib.Path.is_file', return_value=True):
+            with patch('builtins.open', side_effect=OSError("Permission denied")):
+                result = load_transactions("/any/path.json")
+                assert result == []
+
+
+def test_load_transactions_io_error():
+    """Тест: ошибка IOError (покрывает except)."""
+    with patch('pathlib.Path.exists', return_value=True):
+        with patch('pathlib.Path.is_file', return_value=True):
+            with patch('builtins.open', side_effect=IOError("Input/output error")):
+                result = load_transactions("/any/path.json")
+                assert result == []
