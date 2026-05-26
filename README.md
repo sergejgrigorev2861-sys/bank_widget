@@ -119,6 +119,39 @@ def add(a, b):
 def divide(a, b):
     return a / b
 ```
+## Модуль utils
+
+### Функция `load_transactions(file_path)`
+
+Загружает финансовые транзакции из JSON-файла.
+
+```python
+from src.utils import load_transactions
+
+transactions = load_transactions("data/operations.json")
+print(len(transactions))  # количество транзакций
+```
+Возвращает: список словарей с транзакциями или пустой список при ошибке.
+
+Модуль external_api
+Функция convert_amount_to_rub(transaction)
+Конвертирует сумму транзакции из USD или EUR в рубли.
+
+```python
+from src.external_api import convert_amount_to_rub
+
+transaction = {"amount": "100", "currency": {"code": "USD"}}
+rub_amount = convert_amount_to_rub(transaction)  # 9500.0
+```
+Возвращает: float — сумму в рублях или 0.0 при ошибке.
+
+Переменные окружения
+Создайте файл .env в корне проекта:
+
+env
+EXCHANGE_API_KEY=your_api_key_here
+API ключ можно получить на exchangeratesapi.io
+
 ## Лицензия
 
 MIT

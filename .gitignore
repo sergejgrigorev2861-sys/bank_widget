@@ -16,6 +16,15 @@ env/
 # Testing
 .pytest_cache/
 .coverage
+htmlcov/
+.coverage.*
+*.cover
 
 # mypy
 .mypy_cache/
+
+# Poetry
+poetry.lock
+
+# Project specific
+data/__init__.py
