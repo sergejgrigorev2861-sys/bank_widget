@@ -152,6 +152,32 @@ env
 EXCHANGE_API_KEY=your_api_key_here
 API ключ можно получить на exchangeratesapi.io
 
+## Новые форматы данных
+
+Проект теперь поддерживает чтение финансовых транзакций из **CSV** и **Excel (XLSX)** файлов.
+
+### Функции
+
+| Функция | Формат | Возвращает |
+|---------|--------|------------|
+| `read_csv_transactions(file_path)` | CSV | `List[Dict[str, Any]]` |
+| `read_excel_transactions(file_path)` | Excel (XLSX) | `List[Dict[str, Any]]` |
+
+### Пример использования
+
+```python
+from src.file_reader import read_csv_transactions, read_excel_transactions
+
+# Чтение CSV
+transactions_csv = read_csv_transactions("data/transactions.csv")
+
+# Чтение Excel
+transactions_excel = read_excel_transactions("data/transactions_excel.xlsx")
+
+print(f"CSV: {len(transactions_csv)} транзакций")
+print(f"Excel: {len(transactions_excel)} транзакций")
+```
+
 ## Лицензия
 
 MIT
