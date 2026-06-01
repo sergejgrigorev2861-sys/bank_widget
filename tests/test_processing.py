@@ -55,3 +55,54 @@ class TestSortByDate:
         ]
         result = sort_by_date(data)
         assert len(result) == 2
+
+
+def test_count_operations_by_category():
+    """Подсчёт операций по категориям."""
+    from src.processing import count_operations_by_category
+
+    transactions = [
+        {'description': 'Перевод организации'},
+        {'description': 'Открытие вклада'},
+        {'description': 'Перевод с карты на карту'},
+        {'description': 'Покупка в магазине'},
+        {'description': 'Перевод другу'},
+    ]
+    categories = ['Перевод', 'Вклад', 'Покупка']
+
+    result = count_operations_by_category(transactions, categories)
+    assert result['Перевод'] == 3
+    assert result['Вклад'] == 1
+    assert result['Покупка'] == 1
+
+
+def test_count_operations_by_category_empty_transactions():
+    """Пустой список транзакций."""
+    from src.processing import count_operations_by_category
+
+    result = count_operations_by_category([], ['Перевод', 'Вклад'])
+    assert result['Перевод'] == 0
+    assert result['Вклад'] == 0
+
+
+def test_count_operations_by_category_empty_categories():
+    """Пустой список категорий."""
+    from src.processing import count_operations_by_category
+
+    transactions = [{'description': 'Перевод'}]
+    result = count_operations_by_category(transactions, [])
+    assert result == {}
+
+
+def test_count_operations_by_category_case_insensitive():
+    """Регистронезависимый поиск категорий."""
+    from src.processing import count_operations_by_category
+
+    transactions = [
+        {'description': 'ПЕРЕВОД ОРГАНИЗАЦИИ'},
+        {'description': 'перевод с карты'},
+    ]
+    categories = ['Перевод']
+
+    result = count_operations_by_category(transactions, categories)
+    assert result['Перевод'] == 2

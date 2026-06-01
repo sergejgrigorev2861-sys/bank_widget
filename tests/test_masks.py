@@ -22,3 +22,15 @@ def test_get_mask_card_number(card_number, expected):
 ])
 def test_get_mask_account(account_number, expected):
     assert get_mask_account(account_number) == expected
+
+
+def test_get_mask_card_number_invalid_length():
+    """Некорректная длина номера карты (не 16 и не 0)."""
+    result = get_mask_card_number(12345)  # 5 цифр, не 16
+    assert result == "Неверный номер карты"
+
+
+def test_get_mask_account_invalid_length():
+    """Некорректная длина номера счёта (меньше 4 цифр, не 0)."""
+    result = get_mask_account(123)  # 3 цифры
+    assert result == "Неверный номер счета"

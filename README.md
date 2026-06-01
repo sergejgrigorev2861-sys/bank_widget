@@ -8,14 +8,14 @@
 
 ## Установка
 
-```bash
+```
 git clone git@github.com:sergejgrigorev2861-sys/bank_widget.git
 cd bank_widget
 ```
 
 ## Использование
 
-```python
+```
 from src.processing import filter_by_state, sort_by_date
 
 transactions = [
@@ -41,7 +41,7 @@ sorted_by_date = sort_by_date(transactions)
 
 Генератор, фильтрующий транзакции по заданной валюте.
 
-```python
+```
 from src.generators import filter_by_currency
 
 usd_transactions = filter_by_currency(transactions, "USD")
@@ -51,7 +51,7 @@ first_usd = next(usd_transactions)
 #### `transaction_descriptions(transactions)`
 Генератор, возвращающий описания транзакций по очереди.
 
-```python
+```
 from src.generators import transaction_descriptions
 
 descriptions = transaction_descriptions(transactions)
@@ -62,7 +62,7 @@ for desc in descriptions:
 #### `card_number_generator(start, stop)`
 Генератор номеров банковских карт в заданном диапазоне.
 
-```python
+```
 from src.generators import card_number_generator
 
 for card in card_number_generator(1, 5):
@@ -76,13 +76,13 @@ for card in card_number_generator(1, 5):
 
 ## Тестирование
 
-```bash
+```
 pytest tests/
 ```
 
 ## Для проверки покрытия
 
-```bash
+```
 pytest --cov=src --cov-report=html tests/
 ```
 
@@ -177,7 +177,37 @@ transactions_excel = read_excel_transactions("data/transactions_excel.xlsx")
 print(f"CSV: {len(transactions_csv)} транзакций")
 print(f"Excel: {len(transactions_excel)} транзакций")
 ```
+## Интерактивный режим работы
 
+Запустите `main.py` для работы с программой через консоль:
+- Выбор источника данных (JSON, CSV, XLSX)
+- Фильтрация по статусу (EXECUTED, CANCELED, PENDING)
+- Сортировка по дате
+- Фильтрация по рублёвым транзакциям
+- Поиск по слову в описании с использованием регулярных выражений
+
+### Пример работы
+
+```
+poetry run python main.py
+Поиск транзакций
+Функция search_transactions(transactions, search_string) — ищет транзакции, содержащие заданную строку в описании (регистронезависимо, с поддержкой re).
+
+python
+from src.search_utils import search_transactions
+
+result = search_transactions(transactions, "Перевод")
+Подсчёт категорий
+Функция count_operations_by_category(transactions, categories) — подсчитывает количество операций в каждой категории с использованием Counter.
+
+python
+from src.processing import count_operations_by_category
+
+categories = ['Перевод', 'Вклад', 'Покупка']
+result = count_operations_by_category(transactions, categories)
+text
+
+```
 ## Лицензия
 
 MIT

@@ -19,7 +19,7 @@ def get_mask_card_number(card_number: int) -> str:
 
     # Если номер карты меньше 16 цифр — дополняем нулями слева до 16
     if card_number == 0:
-        logger.info(f"Номер карты 0, возвращаем '0 ** **** 0'")
+        logger.info("Номер карты 0, возвращаем '0 ** **** 0'")
         return "0 ** **** 0"
 
     if len(card_str) != 16:
