@@ -94,3 +94,36 @@ def test_load_transactions_io_error():
             with patch('builtins.open', side_effect=IOError("Input/output error")):
                 result = load_transactions("/any/path.json")
                 assert result == []
+
+
+def test_load_transactions_from_excel_file_not_found():
+    from unittest.mock import patch
+
+    from src.utils import load_transactions_from_excel
+
+    with patch('pathlib.Path.exists', return_value=False):
+        result = load_transactions_from_excel("nonexistent.xlsx")
+        assert result == []
+
+
+def test_load_transactions_from_excel_not_a_file():
+    from unittest.mock import patch
+
+    from src.utils import load_transactions_from_excel
+
+    with patch('pathlib.Path.exists', return_value=True):
+        with patch('pathlib.Path.is_file', return_value=False):
+            result = load_transactions_from_excel("some_directory")
+            assert result == []
+
+
+def test_load_transactions_from_excel_exception():
+    from unittest.mock import patch
+
+    from src.utils import load_transactions_from_excel
+
+    with patch('pathlib.Path.exists', return_value=True):
+        with patch('pathlib.Path.is_file', return_value=True):
+            with patch('pandas.read_excel', side_effect=Exception("Read error")):
+                result = load_transactions_from_excel("bad.xlsx")
+                assert result == []
