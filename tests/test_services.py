@@ -1,5 +1,6 @@
-import pytest
+
 from src.services import search_transactions
+
 
 def test_search_transactions_found():
     data = [
@@ -10,15 +11,18 @@ def test_search_transactions_found():
     assert len(result) == 1
     assert result[0]["Описание"] == "Перевод другу"
 
+
 def test_search_transactions_not_found():
     data = [{"Описание": "Покупка", "Категория": "Супермаркеты"}]
     result = search_transactions(data, "перевод")
     assert result == []
 
+
 def test_search_transactions_empty_query():
     data = [{"Описание": "Перевод"}]
     result = search_transactions(data, "")
     assert result == []
+
 
 def test_search_phone_numbers():
     from src.services import search_phone_numbers
@@ -34,6 +38,7 @@ def test_search_phone_numbers():
     assert "+7 921 123-45-67" in result[0]["Описание"]
     assert "8 981 234-56-78" in result[1]["Описание"]
 
+
 def test_search_phone_numbers_no_phones():
     from src.services import search_phone_numbers
 
@@ -43,6 +48,7 @@ def test_search_phone_numbers_no_phones():
     ]
     result = search_phone_numbers(data)
     assert result == []
+
 
 def test_top_cashback_categories():
     from src.services import top_cashback_categories
@@ -96,10 +102,12 @@ def test_top_cashback_categories_less_than_three():
     assert result[0]["category"] == "Супермаркеты"
     assert result[1]["category"] == "Аптеки"
 
+
 def test_main_search_load_error():
-    from src.services import main_search
-    from unittest.mock import patch
     import json
+    from unittest.mock import patch
+
+    from src.services import main_search
 
     with patch('src.services.load_transactions_from_excel', return_value=[]):
         result = main_search("перевод")
@@ -108,9 +116,10 @@ def test_main_search_load_error():
 
 
 def test_main_search_success():
-    from src.services import main_search
-    from unittest.mock import patch
     import json
+    from unittest.mock import patch
+
+    from src.services import main_search
 
     test_transactions = [{"Описание": "Перевод другу", "Категория": "Переводы"}]
     with patch('src.services.load_transactions_from_excel', return_value=test_transactions):
@@ -119,10 +128,12 @@ def test_main_search_success():
         assert len(data) == 1
         assert data[0]["Описание"] == "Перевод другу"
 
+
 def test_main_phone_search_load_error():
-    from src.services import main_phone_search
-    from unittest.mock import patch
     import json
+    from unittest.mock import patch
+
+    from src.services import main_phone_search
 
     with patch('src.services.load_transactions_from_excel', return_value=[]):
         result = main_phone_search()
@@ -131,9 +142,10 @@ def test_main_phone_search_load_error():
 
 
 def test_main_phone_search_success():
-    from src.services import main_phone_search
-    from unittest.mock import patch
     import json
+    from unittest.mock import patch
+
+    from src.services import main_phone_search
 
     test_transactions = [{"Описание": "Мой телефон +7 921 123-45-67"}]
     with patch('src.services.load_transactions_from_excel', return_value=test_transactions):
@@ -142,4 +154,3 @@ def test_main_phone_search_success():
             data = json.loads(result)
             assert len(data) == 1
             assert "+7 921 123-45-67" in data[0]["Описание"]
-

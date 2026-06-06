@@ -1,7 +1,7 @@
 import json
 import logging
 import re
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from src.utils import load_transactions_from_excel
 
@@ -49,6 +49,7 @@ def main_search(query: str) -> str:
 
     return json.dumps(filtered, ensure_ascii=False, indent=2, default=str)
 
+
 def search_phone_numbers(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Возвращает транзакции, в описании которых встречается номер телефона.
@@ -79,6 +80,7 @@ def main_phone_search() -> str:
 
     filtered = search_phone_numbers(transactions)
     return json.dumps(filtered, ensure_ascii=False, indent=2, default=str)
+
 
 def top_cashback_categories(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """

@@ -1,8 +1,10 @@
 import json
 import logging
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
+
 from src.utils import load_transactions_from_excel
 
 logger = logging.getLogger(__name__)
@@ -49,7 +51,7 @@ def spending_by_category(category: str, date: Optional[str] = None) -> List[Dict
             continue
         try:
             # Отделяем дату от времени (до пробела)
-            date_part = date_str.split()[0] # "31.12.2021"
+            date_part = date_str.split()[0]  # "31.12.2021"
             t_date = datetime.strptime(date_part, '%d.%m.%Y')
         except (ValueError, TypeError):
             continue

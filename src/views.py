@@ -1,13 +1,15 @@
 import json
 import logging
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
+
 import requests
 import yfinance as yf
-from datetime import datetime
-from datetime import timedelta
-from typing import List, Dict, Any
+
 from src.utils import load_transactions_from_excel
 
 logger = logging.getLogger(__name__)
+
 
 def get_date_range(date_str: str, period: str = 'M'):
     """
@@ -35,6 +37,7 @@ def get_date_range(date_str: str, period: str = 'M'):
 
     return start_date, end_date
 
+
 def get_greeting() -> str:
     """
     Возвращает приветствие в зависимости от текущего времени суток.
@@ -49,6 +52,7 @@ def get_greeting() -> str:
         return "Добрый вечер"
     else:
         return "Доброй ночи"
+
 
 def main_page(date_time_str: str) -> str:
     """
@@ -77,13 +81,14 @@ def main_page(date_time_str: str) -> str:
 
     result = {
         "greeting": greeting,
-        "cards": cards_info ,
+        "cards": cards_info,
         "top_transactions": top_transactions,
         "currency_rates": currency_rates,
         "stock_prices": stock_prices
     }
 
     return json.dumps(result, ensure_ascii=False, indent=2)
+
 
 def get_cards_info(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
@@ -133,6 +138,7 @@ def get_cards_info(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     return result
 
+
 def get_top_transactions(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     # Сортируем транзакции по убыванию абсолютной суммы
     sorted_trans = sorted(
@@ -163,8 +169,6 @@ def get_top_transactions(transactions: List[Dict[str, Any]]) -> List[Dict[str, A
         })
     return result
 
-import json
-import requests
 
 def get_currency_rates() -> List[Dict[str, Any]]:
     print("DEBUG: get_currency_rates called")
@@ -196,6 +200,7 @@ def get_currency_rates() -> List[Dict[str, Any]]:
         except Exception as e:
             logger.error(f"Ошибка получения курса для {cur}: {e}")
     return rates
+
 
 def get_stock_prices() -> List[Dict[str, Any]]:
     try:
@@ -230,6 +235,7 @@ def get_stock_prices() -> List[Dict[str, Any]]:
             logger.error(f"Ошибка получения цены для {stock}: {e}")
             prices.append({"stock": stock, "price": None})
     return prices
+
 
 def events_page(date_str: str, period: str = 'M') -> str:
     """

@@ -95,9 +95,11 @@ def test_load_transactions_io_error():
                 result = load_transactions("/any/path.json")
                 assert result == []
 
+
 def test_load_transactions_from_excel_file_not_found():
-    from src.utils import load_transactions_from_excel
     from unittest.mock import patch
+
+    from src.utils import load_transactions_from_excel
 
     with patch('pathlib.Path.exists', return_value=False):
         result = load_transactions_from_excel("nonexistent.xlsx")
@@ -105,8 +107,9 @@ def test_load_transactions_from_excel_file_not_found():
 
 
 def test_load_transactions_from_excel_not_a_file():
-    from src.utils import load_transactions_from_excel
     from unittest.mock import patch
+
+    from src.utils import load_transactions_from_excel
 
     with patch('pathlib.Path.exists', return_value=True):
         with patch('pathlib.Path.is_file', return_value=False):
@@ -115,8 +118,9 @@ def test_load_transactions_from_excel_not_a_file():
 
 
 def test_load_transactions_from_excel_exception():
-    from src.utils import load_transactions_from_excel
     from unittest.mock import patch
+
+    from src.utils import load_transactions_from_excel
 
     with patch('pathlib.Path.exists', return_value=True):
         with patch('pathlib.Path.is_file', return_value=True):

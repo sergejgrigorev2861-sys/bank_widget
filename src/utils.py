@@ -4,8 +4,9 @@
 
 import json
 from pathlib import Path
-import pandas as pd
 from typing import Any, Dict, List
+
+import pandas as pd
 
 from src.logger_config import setup_logger
 
@@ -52,6 +53,7 @@ def load_transactions(file_path: str) -> List[Dict[str, Any]]:
     except (json.JSONDecodeError, OSError, IOError) as e:
         logger.error(f"Ошибка при загрузке файла {file_path}: {e}")
         return []
+
 
 def load_transactions_from_excel(file_path: str) -> List[Dict[str, Any]]:
     """

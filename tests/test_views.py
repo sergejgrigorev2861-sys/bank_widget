@@ -1,15 +1,24 @@
-import pytest
-from src.views import events_page, get_date_range
-from datetime import datetime
-from unittest.mock import patch, mock_open
 import json
-from src.views import get_currency_rates, get_stock_prices
-from src.utils import load_transactions_from_excel
+from datetime import datetime
+from unittest.mock import mock_open, patch
+
+from src.views import (
+    events_page,
+    get_cards_info,
+    get_currency_rates,
+    get_date_range,
+    get_greeting,
+    get_stock_prices,
+    get_top_transactions,
+    main_page,
+)
+
 
 def test_get_date_range_month():
     start, end = get_date_range("2022-01-15", "M")
     assert start == datetime(2022, 1, 1)
     assert end == datetime(2022, 1, 15)
+
 
 def test_get_date_range_week():
     start, end = get_date_range("2022-01-15", "W")
@@ -17,21 +26,25 @@ def test_get_date_range_week():
     assert start == datetime(2022, 1, 10)
     assert end == datetime(2022, 1, 15)
 
+
 def test_get_date_range_year():
     start, end = get_date_range("2022-01-15", "Y")
     assert start == datetime(2022, 1, 1)
     assert end == datetime(2022, 1, 15)
+
 
 def test_get_date_range_all():
     start, end = get_date_range("2022-01-15", "ALL")
     assert start == datetime(1970, 1, 1)
     assert end == datetime(2022, 1, 15)
 
+
 def test_events_page_returns_json():
     result = events_page("2022-01-15", "M")
     assert result.startswith("{")
     assert "expenses" in result
     assert "income" in result
+
 
 def test_get_currency_rates():
     with patch('builtins.open', mock_open(read_data=json.dumps({
@@ -46,6 +59,7 @@ def test_get_currency_rates():
             assert rates[0]["currency"] == "USD"
             assert "rate" in rates[0]
 
+
 def test_get_stock_prices():
     with patch('builtins.open', mock_open(read_data=json.dumps({
         "user_stocks": ["AAPL", "GOOGL"]
@@ -59,9 +73,8 @@ def test_get_stock_prices():
             assert prices[0]["stock"] == "AAPL"
             assert "price" in prices[0]
 
+
 def test_events_page_with_test_excel():
-    from src.views import events_page
-    import json
 
     result_json = events_page("2021-12-31", "M")
     data = json.loads(result_json)
@@ -69,9 +82,8 @@ def test_events_page_with_test_excel():
     assert "income" in data
     assert data["expenses"]["total_amount"] > 0
 
+
 def test_events_page_period_week():
-    from src.views import events_page
-    import json
 
     result = events_page("2021-12-31", "W")
     data = json.loads(result)
@@ -79,9 +91,8 @@ def test_events_page_period_week():
     assert "income" in data
     assert data["expenses"]["total_amount"] > 0
 
+
 def test_events_page_period_year():
-    from src.views import events_page
-    import json
 
     result = events_page("2021-12-31", "Y")
     data = json.loads(result)
@@ -89,9 +100,8 @@ def test_events_page_period_year():
     assert "income" in data
     assert data["expenses"]["total_amount"] > 0
 
+
 def test_events_page_period_all():
-    from src.views import events_page
-    import json
 
     result = events_page("2022-01-15", "ALL")
     data = json.loads(result)
@@ -99,44 +109,38 @@ def test_events_page_period_all():
     assert "income" in data
     assert data["expenses"]["total_amount"] > 0
 
+
 def test_events_page_no_data():
-    from src.views import events_page
-    from unittest.mock import patch
 
     with patch('src.views.load_transactions_from_excel', return_value=[]):
         result = events_page("2022-01-15", "M")
         assert "error" in json.loads(result)
 
+
 def test_events_page_invalid_date():
-    from src.views import events_page
-    from unittest.mock import patch
 
     with patch('src.views.load_transactions_from_excel', return_value=[]):
         result = events_page("invalid", "M")
         # Должен вернуть ошибку, так как дата не парсится
         assert "expenses" not in json.loads(result)
+
+
 def test_get_currency_rates_file_not_found():
-    from src.views import get_currency_rates
-    from unittest.mock import patch
 
     with patch('builtins.open', side_effect=FileNotFoundError):
         rates = get_currency_rates()
         assert rates == []
 
+
 def test_get_currency_rates_api_error():
-    from src.views import get_currency_rates
-    from unittest.mock import patch, mock_open
-    import json
 
     with patch('builtins.open', mock_open(read_data=json.dumps({"user_currencies": ["USD"]}))):
         with patch('requests.get', side_effect=Exception("API Error")):
             rates = get_currency_rates()
             assert rates == []
 
+
 def test_get_currency_rates_empty_response():
-    from src.views import get_currency_rates
-    from unittest.mock import patch, mock_open
-    import json
 
     with patch('builtins.open', mock_open(read_data=json.dumps({"user_currencies": ["USD"]}))):
         with patch('requests.get') as mock_get:
@@ -144,18 +148,15 @@ def test_get_currency_rates_empty_response():
             rates = get_currency_rates()
             assert rates == []
 
+
 def test_get_stock_prices_file_not_found():
-    from src.views import get_stock_prices
-    from unittest.mock import patch
 
     with patch('builtins.open', side_effect=FileNotFoundError):
         prices = get_stock_prices()
         assert prices == []
 
+
 def test_get_stock_prices_yfinance_error():
-    from src.views import get_stock_prices
-    from unittest.mock import patch, mock_open
-    import json
 
     with patch('builtins.open', mock_open(read_data=json.dumps({"user_stocks": ["AAPL"]}))):
         with patch('yfinance.Ticker', side_effect=Exception("YFinance error")):
@@ -164,19 +165,16 @@ def test_get_stock_prices_yfinance_error():
             assert prices[0]["stock"] == "AAPL"
             assert prices[0]["price"] is None
 
+
 def test_events_page_invalid_period():
-    from src.views import events_page
-    from unittest.mock import patch
 
     with patch('src.views.load_transactions_from_excel', return_value=[]):
         result = events_page("2022-01-15", "INVALID")
         # Должен вернуть ошибку (или обработать как 'M')
         assert isinstance(json.loads(result), dict)
 
+
 def test_events_page_invalid_date_format():
-    from src.views import events_page
-    from unittest.mock import patch
-    import json
 
     # Данные с неправильным форматом даты
     invalid_data = [
@@ -189,10 +187,8 @@ def test_events_page_invalid_date_format():
         # Должен быть пустой результат, так как дата не распарсилась
         assert data["expenses"]["total_amount"] == 0
 
+
 def test_events_page_missing_date():
-    from src.views import events_page
-    from unittest.mock import patch
-    import json
 
     missing_date_data = [
         {"Категория": "Супермаркеты", "Сумма операции": -100}
@@ -203,10 +199,8 @@ def test_events_page_missing_date():
         data = json.loads(result)
         assert data["expenses"]["total_amount"] == 0
 
+
 def test_events_page_invalid_amount():
-    from src.views import events_page
-    from unittest.mock import patch
-    import json
 
     invalid_amount_data = [
         {"Дата операции": "31.12.2021 00:00:00", "Категория": "Супермаркеты", "Сумма операции": "abc"}
@@ -218,10 +212,8 @@ def test_events_page_invalid_amount():
         # Некорректная сумма не должна попасть в расходы
         assert len(data["expenses"]["main"]) == 0
 
+
 def test_events_page_no_category():
-    from src.views import events_page
-    from unittest.mock import patch
-    import json
 
     no_category_data = [
         {"Дата операции": "31.12.2021 00:00:00", "Сумма операции": -100}
@@ -234,10 +226,8 @@ def test_events_page_no_category():
         categories = [item["category"] for item in data["expenses"]["main"]]
         assert "Без категории" in categories
 
+
 def test_events_page_empty_expenses():
-    from src.views import events_page
-    from unittest.mock import patch
-    import json
 
     # Все транзакции — доходы
     income_only = [
@@ -251,9 +241,8 @@ def test_events_page_empty_expenses():
         assert data["expenses"]["transfers_and_cash"] == []
         assert data["income"]["main"] != []
 
+
 def test_events_page_advanced():
-    from src.views import events_page
-    import json
 
     periods = [
         ("M", "2021-12-31"),
@@ -268,38 +257,31 @@ def test_events_page_advanced():
         assert "income" in data
         assert data["expenses"]["total_amount"] > 0
 
+
 def test_get_currency_rates_empty_currencies():
-    from src.views import get_currency_rates
-    from unittest.mock import patch, mock_open
-    import json
 
     with patch('builtins.open', mock_open(read_data=json.dumps({"user_currencies": []}))):
         rates = get_currency_rates()
         assert rates == []
 
+
 def test_events_page_other_sum():
-    from src.views import events_page
-    import json
 
     data = json.loads(events_page("2021-12-31", "M"))
     main_cats = data["expenses"]["main"]
     if any(cat["category"] == "Остальное" for cat in main_cats):
         assert main_cats[-1]["category"] == "Остальное"
 
+
 def test_events_page_load_error():
-    from src.views import events_page
-    from unittest.mock import patch
-    import json
 
     with patch('src.views.load_transactions_from_excel', return_value=[]):
         result = events_page("2021-12-31", "M")
         data = json.loads(result)
         assert "error" in data
 
+
 def test_get_currency_rates_full_coverage():
-    from src.views import get_currency_rates
-    from unittest.mock import patch, mock_open
-    import json
 
     settings = {"user_currencies": ["USD", "EUR"]}
     with patch('builtins.open', mock_open(read_data=json.dumps(settings))):
@@ -310,33 +292,32 @@ def test_get_currency_rates_full_coverage():
             rates = get_currency_rates()
             assert len(rates) == 2
 
-from unittest.mock import patch
-from src.views import get_greeting
 
 def test_get_greeting_morning():
     with patch('src.views.datetime') as mock_datetime:
         mock_datetime.now.return_value.hour = 8
         assert get_greeting() == "Доброе утро"
 
+
 def test_get_greeting_afternoon():
     with patch('src.views.datetime') as mock_datetime:
         mock_datetime.now.return_value.hour = 14
         assert get_greeting() == "Добрый день"
+
 
 def test_get_greeting_evening():
     with patch('src.views.datetime') as mock_datetime:
         mock_datetime.now.return_value.hour = 20
         assert get_greeting() == "Добрый вечер"
 
+
 def test_get_greeting_night():
     with patch('src.views.datetime') as mock_datetime:
         mock_datetime.now.return_value.hour = 3
         assert get_greeting() == "Доброй ночи"
 
+
 def test_main_page():
-    from src.views import main_page
-    from unittest.mock import patch
-    import json
 
     with patch('src.views.load_transactions_from_excel', return_value=[{"id": 1}]):  # не пусто
         with patch('src.views.get_cards_info',
@@ -352,15 +333,19 @@ def test_main_page():
                         assert "top_transactions" in data
                         assert "currency_rates" in data
                         assert "stock_prices" in data
+
+
 def test_main_page_with_real_data():
-    from src.views import main_page
-    from unittest.mock import patch
-    import json
 
     # Тестовые транзакции
     test_transactions = [
-        {"Номер карты": "*7197", "Сумма операции": -100.0, "Категория": "Еда", "Описание": "Магазин", "Дата операции": "2021-12-31"},
-        {"Номер карты": "*5091", "Сумма операции": -50.0, "Категория": "Транспорт", "Описание": "Такси", "Дата операции": "2021-12-30"},
+        {"Номер карты": "*7197", "Сумма операции": -100.0, "Категория": "Еда",
+            "Описание": "Магазин", "Дата операции": "2021-12-31"},
+        {"Номер карты": "*5091",
+         "Сумма операции": -50.0,
+         "Категория": "Транспорт",
+         "Описание": "Такси",
+         "Дата операции": "2021-12-30"},
     ]
 
     with patch('src.views.load_transactions_from_excel', return_value=test_transactions):
@@ -373,16 +358,16 @@ def test_main_page_with_real_data():
                 assert "top_transactions" in data
                 assert len(data["top_transactions"]) > 0
 
+
 def test_get_date_range_unknown_period():
-    from src.views import get_date_range
 
     start, end = get_date_range("2022-01-15", "X")
     # По логике, неизвестный период должен обрабатываться как месяц (с 1 числа)
     assert start == datetime(2022, 1, 1)
     assert end == datetime(2022, 1, 15)
 
+
 def test_get_cards_info_short_card():
-    from src.views import get_cards_info
 
     transactions = [
         {"Номер карты": "123", "Сумма операции": -100}  # всего 3 цифры
@@ -390,8 +375,8 @@ def test_get_cards_info_short_card():
     result = get_cards_info(transactions)
     assert result == []  # такие карты должны игнорироваться
 
+
 def test_get_cards_info_invalid_amount():
-    from src.views import get_cards_info
 
     transactions = [
         {"Номер карты": "*1234", "Сумма операции": "abc"}  # не число
@@ -399,8 +384,8 @@ def test_get_cards_info_invalid_amount():
     result = get_cards_info(transactions)
     assert result == []  # такие транзакции не должны добавляться
 
+
 def test_get_top_transactions_invalid_date():
-    from src.views import get_top_transactions
 
     transactions = [
         {"Дата операции": "31.12.2021", "Сумма операции": 100, "Категория": "cat", "Описание": "desc"}
@@ -409,10 +394,8 @@ def test_get_top_transactions_invalid_date():
     # Дата должна остаться как есть (без преобразования)
     assert result[0]["date"] == "31.12.2021"
 
+
 def test_get_currency_rates_no_rub():
-    from src.views import get_currency_rates
-    from unittest.mock import patch, mock_open
-    import json
 
     settings = {"user_currencies": ["USD"]}
     with patch('builtins.open', mock_open(read_data=json.dumps(settings))):
@@ -421,10 +404,8 @@ def test_get_currency_rates_no_rub():
             rates = get_currency_rates()
             assert rates == []  # курс не получен
 
+
 def test_get_stock_prices_empty_data():
-    from src.views import get_stock_prices
-    from unittest.mock import patch, mock_open
-    import json
 
     settings = {"user_stocks": ["AAPL"]}
     with patch('builtins.open', mock_open(read_data=json.dumps(settings))):
@@ -434,20 +415,16 @@ def test_get_stock_prices_empty_data():
             prices = get_stock_prices()
             assert prices[0]["price"] is None
 
+
 def test_main_page_no_data():
-    from src.views import main_page
-    from unittest.mock import patch
-    import json
 
     with patch('src.views.load_transactions_from_excel', return_value=[]):
         result = main_page("2025-06-06 15:30:00")
         data = json.loads(result)
         assert "error" in data
 
+
 def test_get_stock_prices_exception():
-    from src.views import get_stock_prices
-    from unittest.mock import patch, mock_open
-    import json
 
     settings = {"user_stocks": ["AAPL"]}
     with patch('builtins.open', mock_open(read_data=json.dumps(settings))):
@@ -455,8 +432,8 @@ def test_get_stock_prices_exception():
             prices = get_stock_prices()
             assert prices[0]["price"] is None
 
+
 def test_get_cards_info_none_card():
-    from src.views import get_cards_info
 
     transactions = [
         {"Номер карты": None, "Сумма операции": -100},
@@ -465,30 +442,24 @@ def test_get_cards_info_none_card():
     result = get_cards_info(transactions)
     assert result == []  # такие карты игнорируются
 
+
 def test_get_currency_rates_generic_exception():
-    from src.views import get_currency_rates
-    from unittest.mock import patch
 
     with patch('builtins.open', side_effect=PermissionError("Access denied")):
         rates = get_currency_rates()
         assert rates == []
 
+
 def test_get_stock_prices_file_exception():
-    from src.views import get_stock_prices
-    from unittest.mock import patch
 
     with patch('builtins.open', side_effect=PermissionError("Access denied")):
         prices = get_stock_prices()
         assert prices == []
 
+
 def test_get_stock_prices_empty_stocks():
-    from src.views import get_stock_prices
-    from unittest.mock import patch, mock_open
-    import json
 
     settings = {"user_stocks": []}
     with patch('builtins.open', mock_open(read_data=json.dumps(settings))):
         prices = get_stock_prices()
         assert prices == []
-
-
